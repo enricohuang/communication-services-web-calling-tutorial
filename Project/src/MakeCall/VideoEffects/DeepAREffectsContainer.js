@@ -16,7 +16,45 @@ export default class VideoEffectsContainer extends React.Component {
         this.call = props.call;
         this.deepar = null;
         this.localVideoStream = props.stream;
-        this.canvas = document.createElement('canvas');
+        this.videoSize = {
+            width: 640,
+            height: 480
+        };
+        const canvas = document.createElement('canvas');
+        const updateCanvasSize = (width, height) => {
+            const dpr = window.devicePixelRatio || 1;
+            const ratio = width / height;
+            if (width > height) {
+                if (width > 640) {
+                    width = 640;
+                    height = 640 / ratio;
+                }
+            } else {
+                if (height> 640) {
+                    width = 640 * ratio;
+                    height = 640;
+                }
+            }
+            width = Math.floor(width);
+            height = Math.floor(height);
+            canvas.style.maxWidth = `${width}px`;
+            canvas.style.maxHeight = `${height}px`;
+            canvas.width = Math.floor(width * dpr);
+            canvas.height = Math.floor(height * dpr);
+        }
+        const video = document.createElement('video');
+        video.autoplay = true;
+        this.videoResizeCallback = () => {
+            if (video.videoWidth !== this.videoSize.width ||
+                video.videoHeight !== this.videoSize.height) {
+                updateCanvasSize(video.videoWidth, video.videoHeight);
+            }
+        };
+        video.addEventListener('resize', this.videoResizeCallback);
+        updateCanvasSize(this.videoSize.width, this.videoSize.height);
+
+        this.canvas = canvas;
+        this.video = video;
         this.initialized = false;
         this.initializationMessage = 'Initializing';
         this.videoEffects = [];
@@ -45,6 +83,7 @@ export default class VideoEffectsContainer extends React.Component {
     }
 
     componentWillUnmount() {
+        this.video.removeEventListener('resize', this.videoResizeCallback);
         if (this.deepar) {
             this.deepar.shutdown();
             this.deepar = null;
@@ -145,14 +184,12 @@ export default class VideoEffectsContainer extends React.Component {
                 ...this.state,
                 startEffectsLoading: true
             });
-            const video = document.createElement('video');
-            video.autoplay = true;
             const localVideoStream = this.localVideoStream;
             this.originalStream = await localVideoStream.getMediaStream();
             this.originalSource = localVideoStream.source;
             this.originalStreamType = localVideoStream.mediaStreamType;
-            video.srcObject = this.originalStream;
-            this.deepar.setVideoElement(video, false);
+            this.video.srcObject = this.originalStream;
+            this.deepar.setVideoElement(this.video, true);
             const mediaStream = this.canvas.captureStream(30);
             await localVideoStream.setMediaStream(mediaStream);
         } finally {
@@ -210,7 +247,7 @@ export default class VideoEffectsContainer extends React.Component {
                 selectedVideoBgEffectIndex: item.key
             });
             if (selectedItem.value === 'backgroundBlur') {
-                await this.deepar.backgroundBlur(true, 8);
+                await this.deepar.backgroundBlur(true, 5);
             } else if (selectedItem.value === 'backgroundReplacement') {
                 if (this.bgImageLocation) {
                     await this.deepar.backgroundReplacement(true, this.bgImageLocation);
