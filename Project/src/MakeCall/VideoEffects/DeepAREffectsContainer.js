@@ -16,43 +16,14 @@ export default class VideoEffectsContainer extends React.Component {
         this.call = props.call;
         this.deepar = null;
         this.localVideoStream = props.stream;
-        this.videoSize = {
-            width: 640,
-            height: 480
-        };
         const canvas = document.createElement('canvas');
-        const updateCanvasSize = (width, height) => {
-            const dpr = window.devicePixelRatio || 1;
-            const ratio = width / height;
-            if (width > height) {
-                if (width > 640) {
-                    width = 640;
-                    height = 640 / ratio;
-                }
-            } else {
-                if (height> 640) {
-                    width = 640 * ratio;
-                    height = 640;
-                }
-            }
-            width = Math.floor(width);
-            height = Math.floor(height);
-            canvas.style.maxWidth = `${width}px`;
-            canvas.style.maxHeight = `${height}px`;
-            canvas.width = Math.floor(width * dpr);
-            canvas.height = Math.floor(height * dpr);
-        }
         const video = document.createElement('video');
         video.autoplay = true;
         this.videoResizeCallback = () => {
-            if (video.videoWidth !== this.videoSize.width ||
-                video.videoHeight !== this.videoSize.height) {
-                updateCanvasSize(video.videoWidth, video.videoHeight);
-            }
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
         };
         video.addEventListener('resize', this.videoResizeCallback);
-        updateCanvasSize(this.videoSize.width, this.videoSize.height);
-
         this.canvas = canvas;
         this.video = video;
         this.initialized = false;
