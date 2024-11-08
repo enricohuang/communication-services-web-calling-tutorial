@@ -48,7 +48,7 @@ export default class AudioEffectsContainer extends React.Component {
             }
         };
 
-        this.initLocalAudioStreamFeatureApi();
+        //this.initLocalAudioStreamFeatureApi();
     }
 
     componentDidCatch(e) {
