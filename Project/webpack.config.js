@@ -121,7 +121,8 @@ module.exports = {
         port: PORT,
         static:'./public',
         allowedHosts:[
-            '.azurewebsites.net'
+            '.azurewebsites.net',
+            'example.com'
         ],
         webSocketServer: false,
         setupMiddlewares: (middlewares, devServer) => {

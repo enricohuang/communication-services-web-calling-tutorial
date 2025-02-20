@@ -10,7 +10,7 @@ import { Dropdown } from '@fluentui/react/lib/Dropdown';
 import { LocalVideoStream, Features, LocalAudioStream } from '@azure/communication-calling';
 import { utils } from '../Utils/Utils';
 import CustomVideoEffects from "./RawVideoAccess/CustomVideoEffects";
-import VideoEffectsContainer from './VideoEffects/VideoEffectsContainer';
+import VideoEffectsContainer from './VideoEffects/DeepAREffectsContainer';
 import AudioEffectsContainer from './AudioEffects/AudioEffectsContainer';
 import { AzureLogger } from '@azure/logger';
 import VolumeVisualizer from "./VolumeVisualizer";
@@ -1925,7 +1925,7 @@ export default class CallCard extends React.Component {
 
                             </div>
                             <div className='ms-Grid-col ms-sm12 ms-md5 md-lg6'>
-                                <VideoEffectsContainer call={this.call} />
+                                <VideoEffectsContainer call={this.call}  stream={this.localVideoStream} />
                             </div>
                         </div>
                     </div>
